@@ -8,7 +8,7 @@ It was developed as a lightweight alternative for [LeaderLine](https://github.co
 with a subset of the functions of LeaderLine. 
 
 SimpleLine does one thing and does it well: It draws arrows between two html elements.
-You can color the arrows by the CSS ```color``` attribute on the line's parent containers, or by setting it's parents
+You can color the arrows by the CSS ```color``` attribute on the line's parent element, or by setting the color directly through options.
 
 ![example1](img/example1.png)
 
