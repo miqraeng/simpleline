@@ -65,12 +65,62 @@
                 font-family:'Courier New', Courier, monospace;
             }
 
+            .draggable {
+                cursor: grab;
+                position: absolute;
+                z-index: 9;
+                background-color: #ffff7f;
+            }
+
         </style>
     </head>
     <body>
         <script type="module">
             import {SimpleLine} from './simpleline.js'
+
+            function dragElement(elmnt) {
+                var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+                if (document.getElementById(elmnt.id + "header")) {
+                    // if present, the header is where you move the DIV from:
+                    document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+                } else {
+                    // otherwise, move the DIV from anywhere inside the DIV:
+                    elmnt.onmousedown = dragMouseDown;
+                }
+
+                function dragMouseDown(e) {
+                    e = e || window.event;
+                    e.preventDefault();
+                    // get the mouse cursor position at startup:
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                    document.onmouseup = closeDragElement;
+                    // call a function whenever the cursor moves:
+                    document.onmousemove = elementDrag;
+                }
+
+                function elementDrag(e) {
+                    e = e || window.event;
+                    e.preventDefault();
+                    // calculate the new cursor position:
+                    pos1 = pos3 - e.clientX;
+                    pos2 = pos4 - e.clientY;
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                    // set the element's new position:
+                    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+                    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+                }
+
+                function closeDragElement() {
+                    // stop moving when mouse button is released:
+                    document.onmouseup = null;
+                    document.onmousemove = null;
+                }
+            }
+
             window.addEventListener("load", () =>{
+                dragElement(document.querySelector("#ex9-end"));
 
                 const example1 = new SimpleLine("#ex1-start", "#ex1-end", {
                     color: "#373fff",
@@ -128,6 +178,10 @@
                     }
                 });
 
+                const example9 = new SimpleLine("#ex9-start", "#ex9-end", {
+                    color: "#373fff",
+                });
+
             });
         </script>
         <div class="examplegrid">
@@ -167,7 +221,7 @@ const example2 = new SimpleLine("#ex2-start", "#ex2-end", {
         <div class="example">
             <h3>Example 3</h3>
             <p>Anchors</p>
-            <div class="grid2 " style="">
+            <div class="grid2">
                 <div class='dummy'></div>
                 <div class="gridelement" id="ex3-start"> Start </div>
                 <div class='dummy'></div>
@@ -189,7 +243,7 @@ const example3 = new SimpleLine("#ex3-start", "#ex3-end", {
         <div class="example">
             <h3>Example 4</h3>
             <p>Scrolling with one element in the scroll and the other not<br>
-                Note that the line is shown outside of the scroll area, because the highest commong containing element is outside the scroll area</p>
+                Note that the line is shown outside of the scroll area, because the lowest common containing element is outside the scroll area</p>
             <div class="grid4 scrollx" style="width: 200px; position: relative">
                 <div class='dummy'></div>
                 <div class="gridelement" id="ex4-end"> End </div>
@@ -213,7 +267,7 @@ const example4 = new SimpleLine("#ex4-start", "#ex4-end", {
         <div class="example">
             <h3>Example 4</h3>
             <p>Scrolling with one element in the scroll and the other not, reversed<br>
-                Note that the line is still shown outside of the scroll area, because the highest commong containing element is outside the scroll area</p>
+                Note that the line is still shown outside of the scroll area, because the lowest common containing element is outside the scroll area</p>
             <div class="grid4 scrollx" style="width: 200px;">
                 <div class='dummy'></div>
                 <div class="gridelement" id="ex5-start"> start </div>
@@ -224,7 +278,7 @@ const example4 = new SimpleLine("#ex4-start", "#ex4-end", {
             <div class="gridelement" id="ex5-end"> End </div>
             <h4>Example code:</h4>
             <pre class="code">
-const example4 = new SimpleLine("#ex5-start", "#ex5-end", {
+const example5 = new SimpleLine("#ex5-start", "#ex5-end", {
     color: "#373fff",
     anchors: {
         start: ['bottom','center'],
@@ -251,7 +305,7 @@ const example4 = new SimpleLine("#ex5-start", "#ex5-end", {
             
             <h4>Example code:</h4>
             <pre class="code">
-const example5 = new SimpleLine("#ex6-start", "#ex6-end", {
+const example6 = new SimpleLine("#ex6-start", "#ex6-end", {
     color: "#373fff",
     anchors: {
         start: ['top','center'],
@@ -279,7 +333,7 @@ const example5 = new SimpleLine("#ex6-start", "#ex6-end", {
             
             <h4>Example code:</h4>
             <pre class="code">
-const example6 = new SimpleLine("#ex7-start", "#ex7-end", {
+const example7 = new SimpleLine("#ex7-start", "#ex7-end", {
     color: "#373fff",
     anchors: {
         start: ['top','center'],
@@ -293,19 +347,35 @@ const example6 = new SimpleLine("#ex7-start", "#ex7-end", {
             <h3>Example 8</h3>
             <p>Gravity</p>
             <div class="grid2">
-                <div class="gridelement" id="ex8-start"> End </div>
+                <div class="gridelement" id="ex8-start"> Start </div>
                 <div class='dummy'></div>
                 <div class='dummy'></div>
-                <div class="gridelement" id="ex8-end"> Start </div>
+                <div class="gridelement" id="ex8-end"> End </div>
             </div>
             <h4>Example code:</h4>
             <pre class="code">
-const example7 = new SimpleLine("#ex8-start", "#ex8-end", {
+const example8 = new SimpleLine("#ex8-start", "#ex8-end", {
     color: "#373fff",
     gravity: {
         start: 2,
         end: 0.7
     }
+});
+            </pre>
+        </div>
+        <div class="example">
+            <h3>Example 9</h3>
+            <p>Dragging</p>
+            <div class="grid2">
+                <div class="gridelement" id="ex9-start"> Start </div>
+                <div class='dummy'></div>
+                <div class='dummy'></div>
+                <div class="gridelement draggable" id="ex9-end"> Drag me </div>
+            </div>
+            <h4>Example code:</h4>
+            <pre class="code">
+const example9 = new SimpleLine("#ex9-start", "#ex9-end", {
+    color: "#373fff",
 });
             </pre>
         </div>
