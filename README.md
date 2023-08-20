@@ -4,7 +4,7 @@
 
 Simpleline is a simple and lightweight tool to draw lines and arrows between two html elements.
 
-It was developed as a very lightweight alternative for [LeaderLine](https://github.com/anseki/leader-line)
+It was developed as a lightweight alternative for [LeaderLine](https://github.com/anseki/leader-line)
 with a subset of the functions of LeaderLine. 
 
 SimpleLine does one thing and does it well: It draws arrows between two html elements.
