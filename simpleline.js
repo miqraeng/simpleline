@@ -5,6 +5,7 @@
 The MIT License (MIT)
 
 Copyright (c) 2023 P.M. Kuipers
+Copyright (c) 2023 Morglod/jchnkl for parts taken from the typescript @ https://github.com/Morglod/csscalc/
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +26,200 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import {calc} from "./css-calc";
+/** Code taken from https://github.com/Morglod/csscalc/*/
+// units -> pixels
+  const Absolute = {
+    /** browser version of pixel */
+    px: 1,
+    /** One centimeter. 1cm = 96px/2.54 */
+    cm: 96 / 2.54,
+    /** One millimeter. 1mm = 1/10th of 1cm */
+    mm: 96 / 25.4,
+    /** One quarter of a millimeter. 1Q = 1/40th of 1cm */
+    Q: 96 / 101.6,
+    /** One inch. 1in = 2.54cm = 96px */
+    in: 96,
+    /** One pica. 1pc = 12pt = 1/6th of 1in */
+    pc: 96 / 6,
+    /** One point. 1pt = 1/72nd of 1in */
+    pt: 96 / 72
+  };
+  
+  // units ->(calc context)-> pixels
+  const Relative = {
+    /**
+     * Equal to 1% of the height of the viewport 
+     * @param {number} count
+     * @param {object} ctx
+    */
+    vh: (count = 1, ctx) => {
+      return ((ctx ? ctx.viewportHeight : window.innerHeight) / 100) * count;
+    },
+    /**
+     * Equal to 1% of the width of the viewport  
+     * @param {number} count
+     * @param {object} ctx
+    */
+    vw: (count = 1, ctx) => {
+      return ((ctx ? ctx.viewportWidth : window.innerWidth) / 100) * count;
+    },
+    /**
+     * 1/100th of the smallest viewport side  
+     * @param {number} count
+     * @param {object} ctx
+    */
+    vmin: (count = 1, ctx) => {
+      return (
+        ((ctx
+          ? Math.min(ctx.viewportWidth, ctx.viewportHeight)
+          : Math.min(window.innerWidth, window.innerHeight)) /
+          100) *
+        count
+      );
+    },
+    /**
+     * 1/100th of the largest viewport side  
+     * @param {number} count
+     * @param {object} ctx
+    */
+    vmax: (count = 1, ctx) => {
+      return (
+        ((ctx
+          ? Math.max(ctx.viewportWidth, ctx.viewportHeight)
+          : Math.max(window.innerWidth, window.innerHeight)) /
+          100) *
+        count
+      );
+    },
+    /**
+     * Represents the font-size of <html> element  
+     * @param {number} count
+     * @param {object} ctx
+    */
+    rem: (count = 1, ctx) => {
+      return (
+        (ctx
+          ? ctx.htmlFontSize
+          : parseFloat(
+              window.getComputedStyle(document.querySelector("html")).fontSize
+            )) * count
+      );
+    },
+    /**
+     * percent of width  
+     * @param {number} count
+     * @param {object} ctx
+    */
+    "%w": (count = 1, ctx) => {
+      return ((ctx ? ctx.width : document.body.clientWidth) / 100) * count;
+    },
+    /**
+     * percent of height  
+     * @param {number} count
+     * @param {object} ctx
+    */
+    "%h": (count = 1, ctx) => {
+      return ((ctx ? ctx.height : document.body.clientHeight) / 100) * count;
+    }
+  };
+  
+  const Units = {
+    ...Relative,
+    ...Absolute
+  };
+  
+  const UnitRegexpStr = `(?:\\s|^)(\\d*(?:\\.\\d+)?)(${Object.keys(
+    Units
+  ).join("|")})(?:\\s|$|\\n)`;
+  const UnitRegexp = new RegExp(UnitRegexpStr);
+  const UnitRegexpGM = new RegExp(UnitRegexpStr, "gm");
+  
+  /**
+   * 
+   * @param {*} count 
+   * @param {*} fromUnits 
+   * @param {*} toUnits 
+   * @param {*} ctx 
+   * @returns 
+   */
+  function convert(count, fromUnits, toUnits, ctx = calcCtx()) {
+    const baseUnit = Units[fromUnits];
+    const basePx =
+      typeof baseUnit === "function" ? baseUnit(count, ctx) : baseUnit * count;
+  
+    const dstUnit = Units[toUnits];
+    const dstBasePx = typeof dstUnit === "function" ? dstUnit(1, ctx) : dstUnit;
+  
+    return basePx / dstBasePx;
+  }
+  
+  /**
+   * 
+   * @param {*} expr 
+   * @param {*} toUnits 
+   * @param {*} ctx 
+   * @returns 
+   */
+  export function convertAllInStr(expr, toUnits, ctx = calcCtx()) {
+    return expr.replace(UnitRegexpGM, (substr, count, unit) => {
+      return convert(parseFloat(count), unit, toUnits, ctx).toString();
+    });
+  }
+  
+  /**
+   * 
+   * @param {*} el 
+   * @returns 
+   */
+  function calcCtx(el) {
+    if (el) {
+      const rect = el.getBoundingClientRect();
+  
+      return {
+        width: rect.width,
+        height: rect.height,
+        viewportWidth: window.innerWidth,
+        viewportHeight: window.innerHeight,
+        htmlFontSize: parseFloat(
+          window.getComputedStyle(document.querySelector("html")).fontSize
+        ),
+      };
+    } else {
+      return {
+        width: document.body.clientWidth,
+        height: document.body.clientHeight,
+        viewportWidth: window.innerWidth,
+        viewportHeight: window.innerHeight,
+        htmlFontSize: parseFloat(
+          window.getComputedStyle(document.querySelector("html")).fontSize
+        )
+      };
+    }
+  }
+  
+  /**
+   * 
+   * @param {*} expression 
+   * @param {*} el_ctx 
+   * @param {*} ctx 
+   * @returns 
+   */
+  function calc(expression, el_ctx, ctx) {
+    if (el_ctx === undefined) {ctx = calcCtx(); }
+    else {
+      if (el_ctx instanceof HTMLElement) {
+        if (!ctx) {ctx = calcCtx(el_ctx); }
+      } else {
+        ctx = el_ctx;
+      }
+    }
+  
+    return eval(convertAllInStr(expression, "px", ctx));
+  }
+  
+
+
+/** End code taken from  https://github.com/Morglod/csscalc/ */
 
 
 /**
@@ -67,6 +261,21 @@ const debounce = (func, delay) => {
 };
 
 /**
+ * Return the highest common offset parent for two element
+ * @param {HTMLElement} one 
+ * @param {HTMLElement} two 
+ */
+function getCommonOffsetParent(one,two){
+    const op1 = one.offsetParent?one.offsetParent:document.body;
+    const op2 = two.offsetParent?two.offsetParent:document.body;
+    if( op1 == op2) {
+        return op1;
+    } else {
+        return getCommonOffsetParent(op1,op2);
+    }
+}
+
+/**
  * Get the position of an element relative to another
  * @param {HTMLElement} el The element whose position to determine
  * @param {HTMLElement} reference Relative to this element
@@ -79,21 +288,50 @@ const getElementPosition = (el, reference) => {
     }
 
     if (!reference || !(reference instanceof HTMLElement)){
-        // Take the document body as reference if the reference is invalud
+        // Take the document body as reference if the reference is invalid
         reference = document.querySelector("body");
+    }
+
+    const elSP = getScrollParent(el);
+    const elScroll = { x:0, y:0};
+    if(elSP.tagName != 'BODY') {  // we do not want to take body scroll into account, that messes things up
+        elScroll.x = elSP.scrollLeft;
+        elScroll.y = elSP.scrollTop;
+    }
+
+    const refSP = getScrollParent(reference);
+    const refScroll = { x:0, y:0};
+    if(refSP.tagName != 'BODY') { // we do not want to take body scroll into account, that messes things up
+        refScroll.x = refSP.scrollLeft;
+        refScroll.y = refSP.scrollTop;
     }
 
     if( el.offsetParent === reference){
         // easily done if the reference element is also the offsetParent..
-        return {x: el.offsetLeft, y: el.offsetTop};
+        return {x: (el.offsetLeft - elScroll.x) - ( 0 - refScroll.x), 
+                y: (el.offsetTop - elScroll.y) - (0 - refScroll.y) };
     } else {
         const elR = el.getBoundingClientRect();
         const refR = reference.getBoundingClientRect();
 
-        return {x: elR.left - refR.left,
-                y: elR.top - refR.top};
+
+        return {x: (elR.left - elScroll.x) - (refR.left - refScroll.x),
+                y: (elR.top  - elScroll.y) - (refR.top - refScroll.y) };
     }
 };
+
+/**
+ * Get the scroll parent of an element
+ * @param {HTMLElement} el The element whose position to determine
+ * @returns {HTMLElement|null} Position object with {x: ..., y:...}
+ */
+function getScrollParent(el){
+    if (el.scrollHeight > el.clientHeight || el.scrollWidth > el.clientWidth) {
+      return el;
+    } else {
+      return getScrollParent(el.parentNode);
+    }
+  }
 
 export class SimpleLine {
     static idCounter = 0;
@@ -149,12 +387,13 @@ export class SimpleLine {
         this.resizeObserver.observe(this.end);
 
         // Setup the mutationobserver so we can remove the line if it's start or end is removed.
+        const self = this;
         this.mutationObserver = new MutationObserver(function(mutations_list) {
             mutations_list.forEach(function(mutation) {
                 mutation.removedNodes.forEach(function(removed_node) {
-                    if(removed_node == this.start  || removed_node == this.end) {
+                    if(removed_node == self.start  || removed_node == self.end) {
                         console.warning("Element removed",removed_node);
-                        this.remove();
+                        self.remove();
                     }
                 });
             });
@@ -232,8 +471,25 @@ export class SimpleLine {
      * Check for an element positino change and update accordingly
      */
     positionCheck(){
-        const startPos = {x: this.start.offsetLeft, y: this.start.offsetTop};
-        const endPos = {x: this.end.offsetLeft, y: this.end.offsetTop};
+        const startSP = getScrollParent(this.start);
+        const startScroll = { x:0, y:0};
+        if(startSP.tagName != 'BODY') {  // we do not want to take body scroll into account, that messes things up
+            startScroll.x = startSP.scrollLeft;
+            startScroll.y = startSP.scrollTop;
+        }
+
+        const endSP = getScrollParent(this.end);
+        const endScroll = { x:0, y:0};
+        if(endSP.tagName != 'BODY') {  // we do not want to take body scroll into account, that messes things up
+            endScroll.x = endSP.scrollLeft;
+            endScroll.y = endSP.scrollTop;
+        }
+
+        const startPos  = { x: this.start.offsetLeft - startScroll.x, 
+                            y: this.start.offsetTop - startScroll.y};
+                            
+        const endPos    = { x: this.end.offsetLeft - endScroll.x, 
+                            y: this.end.offsetTop - endScroll.y};
 
         let needUpdate = false;
         if(this.startPos){
@@ -256,14 +512,7 @@ export class SimpleLine {
 
     getContainer(){
         // Validate or determine container
-        let container = this.start.offsetParent;
-        if(!container) {
-            if(getComputedStyle(this.start).position == "fixed"){
-                container = document.querySelector("body");
-            } else {
-                console.error("Start element has no offsetParent. likely ");
-            }
-        }
+        let container = getCommonOffsetParent(this.start,this.end);
         return container;
     }
 
