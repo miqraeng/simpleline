@@ -30,7 +30,7 @@ Or use it in direct html like this.
 ```
 
 Pass two HTML/SVG elements to `SimpleLine` constructor. Then a line with arrow is drawn between those elements.
-You can also pass the html id of those elements and the cosntructor will look up the html elements
+You can also pass the html id of those elements and the constructor will look up the html elements
 
 ```js
 const line = new SimpleLine(startElement, endElement, options);
@@ -64,14 +64,16 @@ const line = new SimpleLine(startElement, endElement, options);
 ## Features
 
 ### Scroll safe
-SimpleLine is scroll safe, as long as 
-1. Both elements are in the same scroll container
-2. you ensure that one of the parent elements of the start element is marked as a [containing block](https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block#identifying_the_containing_block). For example by using one if the CSS ```position``` properties in it's style. 
-The line element wille be drawn relative to the start element's closest containing block.
+SimpleLine is scroll safe, but results are best if 
+1. both start and end elements are in the same scroll area
+2. the scroll area is marked as a [containing block](https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block#identifying_the_containing_block). 
+   For example by using one if the CSS ```position``` properties in it's style. 
+   
+The line element wille be drawn in the closest containing block that contains both elements
 
 ### Auto repositioning
 Once you draw the line, the position of the html elements it connects with a line is tracked by the SimpleLine object.
 Upon a change in position in one of the elements, the line element is updated to reflect the changes.
 
-This means that you can also use Simple Line to connect to dragging elements while dragging.
+This also means that you can use Simple Line to connect to dragging elements while dragging.
 
