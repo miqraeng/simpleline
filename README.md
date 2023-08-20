@@ -12,6 +12,9 @@ You can color the arrows by the CSS ```color``` attribute on the line's parent c
 
 ![example1](img/example1.png)
 
+### Example
+The **demo.html** file contains some examples of what simpleline does. Host it yourself on a local webserver to test,
+or go click [here](https://raw.githack.com/miqraeng/simpleline/main/demo.html) to view the demo.
 
 ## Usage
 SimpleLine is an ES module, so import it as follows in your existing ES modules
