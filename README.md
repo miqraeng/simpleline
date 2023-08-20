@@ -64,6 +64,12 @@ const line = new SimpleLine(startElement, endElement, options);
 };
 ```
 
+### Functions
+The simpleline object has two functions intended for public use:
+
+- **update()** Repaints the line with the current position of the elements. USeful if ```autorefresh``` is off
+- **remove()** Removes the line from the dom
+
 ## Features
 
 ### Scroll safe
