@@ -41,7 +41,7 @@ const line = new SimpleLine(startElement, endElement, options);
 **options** is an object with any of the following properties. Shown are the default values used if you don't specify them
 ```js
 {
-    autorefresh: 10, // Set the refresh timer for auto postion refreh
+    autorefresh: 10, // Set the refresh timer for auto postion refresh (set to 0 to disable)
     class: "",  // Add an extra class to the line's container element here
     color: "",  // Set the color style of the line and arrow. 
                 // Leave empty (or set to invalid)  makes it inherit the color from parent container 'color' css property.
@@ -64,9 +64,9 @@ const line = new SimpleLine(startElement, endElement, options);
 ## Features
 
 ### Scroll safe
-SimpleLine is scroll safe, as long as you ensure that one of the parent elements of the start element is marked as 
-a [containing block](https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block#identifying_the_containing_block)
-for example by using one if the CSS ```position``` properties in it's style. 
+SimpleLine is scroll safe, as long as 
+1. Both elements are in the same scroll container
+2. you ensure that one of the parent elements of the start element is marked as a [containing block](https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block#identifying_the_containing_block). For example by using one if the CSS ```position``` properties in it's style. 
 The line element wille be drawn relative to the start element's closest containing block.
 
 ### Auto repositioning

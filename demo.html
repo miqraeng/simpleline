@@ -2,32 +2,313 @@
     <head>
         <title>SimpleLine Demo</title>
         <style>
+            .grid2 {
+                display: grid;
+                grid-template-columns: 100px 100px;
+                column-gap: 10em;
+                row-gap: 3em;
 
+            }
+            .grid4 {
+                display: grid;
+                grid-template-columns: 100px 100px 100px 100px;
+                column-gap: 10em;
+                row-gap: 3em;
+            }
+
+            .scrollx {
+                overflow-x: scroll;
+                overflow-y: hidden;
+            }
+
+            .gridelement {
+                border-color: #007f00;
+                border-width: 1px;
+                border-style: solid;
+                background-color: #7fff7f;
+                width: 70px;
+                padding: 1em;
+                text-align: center;
+            }
+            .dummy {
+                width: 70px;
+            }
+
+            .code {
+                padding-left: 4em;
+                padding-right: 4em;
+                padding-top: 1em;
+                padding-bottom: 1em;
+                background-color: #ccc;
+                width: fit-content;
+            }
+
+            .examplegrid {
+                display: grid;
+                grid-template-columns: repeat( auto-fit, 37em );
+                margin-bottom: 1em;
+            }
+
+            .example {
+                border-color: #ccc;
+                border-radius: 5px;
+                border-style: solid;
+                border-width: 1px;
+                padding: 1em;
+                width: 34em;
+                margin: 1em;
+                margin-bottom: 0em;
+            }
+
+            .css {
+                background-color: #ffc;
+                font-family:'Courier New', Courier, monospace;
+            }
 
         </style>
     </head>
     <body>
         <script type="module">
-            import SimpleLine from 'simpleline'
+            import {SimpleLine} from './simpleline.js'
+            window.addEventListener("load", () =>{
 
-            const example1 = new SimpleLine("ex1-start", "ex1-end", {
-                color: "#373fff",
+                const example1 = new SimpleLine("#ex1-start", "#ex1-end", {
+                    color: "#373fff",
+                });
+
+                const example2 = new SimpleLine("#ex2-start", "#ex2-end", {
+                    color: "#373fff",
+                });
+
+                const example3 = new SimpleLine("#ex3-start", "#ex3-end", {
+                    color: "#373fff",
+                    anchors: {
+                        start: ['top', 'left'],
+                        end: ['bottom', 'right'],
+                    }
+                });
+
+                const example4 = new SimpleLine("#ex4-start", "#ex4-end", {
+                    color: "#373fff",
+                    anchors: {
+                        start: ['top','center'],
+                        end: ['bottom','center'],
+                    }
+                });
+
+                const example5 = new SimpleLine("#ex5-start", "#ex5-end", {
+                    color: "#373fff",
+                    anchors: {
+                        start: ['bottom','center'],
+                        end: ['top','center'],
+                    }
+                });                
+
+                const example6 = new SimpleLine("#ex6-start", "#ex6-end", {
+                    color: "#373fff",
+                    anchors: {
+                        start: ['top','center'],
+                        end: ['bottom','center'],
+                    }
+                });
+
+                const example7 = new SimpleLine("#ex7-start", "#ex7-end", {
+                    color: "#373fff",
+                    anchors: {
+                        start: ['top','center'],
+                        end: ['bottom','center'],
+                    }
+                });
+
+                const example8 = new SimpleLine("#ex8-start", "#ex8-end", {
+                    color: "#373fff",
+                    gravity: {
+                        start: 2,
+                        end: 0.7
+                    }
+                });
+
             });
-
         </script>
+        <div class="examplegrid">
+        <div class="example">
+            <h3>Example 1</h3>
+            <p>Straight lines</p>
+            <div class="grid2">
+                <div class="gridelement" id="ex1-start"> Start </div>
+                <div class="gridelement" id="ex1-end"> End </div>
+            </div>
+            <h4>Example code:</h4>
+            <pre class="code">
+const example1 = new SimpleLine("#ex1-start", "#ex1-end", {
+    color: "#373fff"
+});
+            </pre>
+        </div>
 
         <div class="example">
-        <h3>Example 1</h3>
-        <div class="grid">
-            <div class="gridelement" id="ex1-start"> Start </div>
-            <div class="gridelement" id="ex1-end"> Start </div>
+            <h3>Example 2</h3>
+            <p>Curved lines</p>
+            <div class="grid2">
+                <div class="gridelement" id="ex2-start"> Start </div>
+                <div class='dummy'></div>
+                <div class='dummy'></div>
+                <div class="gridelement" id="ex2-end"> End </div>
+            </div>
+            <h4>Example code:</h4>
+            <pre class="code">
+const example2 = new SimpleLine("#ex2-start", "#ex2-end", {
+    color: "#373fff"
+});
+            </pre>
         </div>
-        <pre class="code">
-            const example1 = new SimpleLine("ex1-start", "ex1-end", {
-                color: "#373fff"
-            });
-        </pre>
 
+
+        <div class="example">
+            <h3>Example 3</h3>
+            <p>Anchors</p>
+            <div class="grid2 " style="">
+                <div class='dummy'></div>
+                <div class="gridelement" id="ex3-start"> Start </div>
+                <div class='dummy'></div>
+                <div class='dummy'></div>
+                <div class="gridelement" id="ex3-end"> End </div>
+            </div>
+            <h4>Example code:</h4>
+            <pre class="code">
+const example3 = new SimpleLine("#ex3-start", "#ex3-end", {
+    color: "#373fff",
+    anchors: {
+        start: ['top', 'left'],
+        end: ['bottom', 'right'],
+    }
+});
+            </pre>
         </div>
+
+        <div class="example">
+            <h3>Example 4</h3>
+            <p>Scrolling with one element in the scroll and the other not<br>
+                Note that the line is shown outside of the scroll area, because the highest commong containing element is outside the scroll area</p>
+            <div class="grid4 scrollx" style="width: 200px; position: relative">
+                <div class='dummy'></div>
+                <div class="gridelement" id="ex4-end"> End </div>
+                <div class='dummy'></div>
+                <div class='dummy'></div>
+            </div>
+            <br><br><br>
+            <div class="gridelement" id="ex4-start"> Start </div>
+            <h4>Example code:</h4>
+            <pre class="code">
+const example4 = new SimpleLine("#ex4-start", "#ex4-end", {
+    color: "#373fff",
+    anchors: {
+        start: ['top','center'],
+        end: ['bottom','center'],
+    }
+});
+            </pre>
+        </div>
+
+        <div class="example">
+            <h3>Example 4</h3>
+            <p>Scrolling with one element in the scroll and the other not, reversed<br>
+                Note that the line is still shown outside of the scroll area, because the highest commong containing element is outside the scroll area</p>
+            <div class="grid4 scrollx" style="width: 200px;">
+                <div class='dummy'></div>
+                <div class="gridelement" id="ex5-start"> start </div>
+                <div class='dummy'></div>
+                <div class='dummy'></div>
+            </div>
+            <br><br><br>
+            <div class="gridelement" id="ex5-end"> End </div>
+            <h4>Example code:</h4>
+            <pre class="code">
+const example4 = new SimpleLine("#ex5-start", "#ex5-end", {
+    color: "#373fff",
+    anchors: {
+        start: ['bottom','center'],
+        end: ['top','center'],
+    }
+});
+            </pre>
+        </div>
+
+        <div class="example">
+            <h3>Example 6</h3>
+            <p>Scrolling in same scroll container (scroll container has <span class="css">position: relative;</span>)</p>
+            <div class="grid4 scrollx" style="width: 200px; position: relative;">
+                <div class='dummy'></div>
+                <div class="gridelement" id="ex6-end"> End </div>
+                <div class='dummy'></div>
+                <div class='dummy'></div>
+                <div class="gridelement" id="ex6-start"> Start </div>
+                <div class='dummy'></div>
+                <div class='dummy'></div>
+                <div class='dummy'></div>
+            </div>
+            <br><br><br>
+            
+            <h4>Example code:</h4>
+            <pre class="code">
+const example5 = new SimpleLine("#ex6-start", "#ex6-end", {
+    color: "#373fff",
+    anchors: {
+        start: ['top','center'],
+        end: ['bottom','center'],
+    }
+});
+            </pre>
+        </div>
+
+        <div class="example">
+            <h3>Example 7</h3>
+            <p>Scrolling in same scroll container (scroll container has NO <span class="css">position</span> set)<br>
+            Note that the line is shown outside of the scroll area, because no containing element is set</p>
+            <div class="grid4 scrollx" style="width: 200px;">
+                <div class='dummy'></div>
+                <div class="gridelement" id="ex7-end"> End </div>
+                <div class='dummy'></div>
+                <div class='dummy'></div>
+                <div class="gridelement" id="ex7-start"> Start </div>
+                <div class='dummy'></div>
+                <div class='dummy'></div>
+                <div class='dummy'></div>
+            </div>
+            <br><br><br>
+            
+            <h4>Example code:</h4>
+            <pre class="code">
+const example6 = new SimpleLine("#ex7-start", "#ex7-end", {
+    color: "#373fff",
+    anchors: {
+        start: ['top','center'],
+        end: ['bottom','center'],
+    }
+});
+            </pre>
+        </div>   
+
+        <div class="example">
+            <h3>Example 8</h3>
+            <p>Gravity</p>
+            <div class="grid2">
+                <div class="gridelement" id="ex8-start"> End </div>
+                <div class='dummy'></div>
+                <div class='dummy'></div>
+                <div class="gridelement" id="ex8-end"> Start </div>
+            </div>
+            <h4>Example code:</h4>
+            <pre class="code">
+const example7 = new SimpleLine("#ex8-start", "#ex8-end", {
+    color: "#373fff",
+    gravity: {
+        start: 2,
+        end: 0.7
+    }
+});
+            </pre>
+        </div>
+    </div>  
     </body>
 </html>
